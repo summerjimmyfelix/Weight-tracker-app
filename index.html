@@ -1,0 +1,1238 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="减肥记录">
+<meta name="theme-color" content="#f2f2f7">
+<title>减肥进度记录</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+:root {
+    --bg: #f7efe6;
+    --bg-deep: #efe2d3;
+    --card: rgba(255, 252, 247, 0.9);
+    --card-strong: #fffdf8;
+    --text: #2c241d;
+    --muted: #7a6c61;
+    --line: rgba(78, 59, 43, 0.12);
+    --accent: #ef6c4d;
+    --accent-strong: #d45136;
+    --accent-soft: rgba(239, 108, 77, 0.14);
+    --success: #27936a;
+    --success-soft: rgba(39, 147, 106, 0.14);
+    --navy: #23313d;
+    --shadow: 0 24px 70px rgba(91, 66, 42, 0.16);
+    --shadow-soft: 0 12px 30px rgba(91, 66, 42, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: linear-gradient(180deg, #f7eee4, #f1e5d8);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top, rgba(255, 187, 141, 0.38), transparent 28%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+    padding: 18px 12px calc(130px + env(safe-area-inset-bottom));
+}
+
+.app-shell {
+    width: min(100%, 430px);
+    margin: 0 auto;
+    padding: 14px;
+    border-radius: 34px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.64), rgba(255,255,255,0.3));
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+}
+
+.app-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.top-actions {
+    display: flex;
+    gap: 10px;
+    position: relative;
+}
+
+.glass-btn {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.66);
+    border: 1px solid rgba(255,255,255,0.82);
+    box-shadow: 0 8px 20px rgba(17,17,17,0.05);
+    backdrop-filter: blur(16px);
+    font-size: 18px;
+    color: var(--navy);
+    cursor: pointer;
+    border: 0;
+}
+
+.menu-panel {
+    position: absolute;
+    top: 52px;
+    right: 0;
+    width: 170px;
+    padding: 8px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.96);
+    border: 1px solid rgba(60, 60, 67, 0.1);
+    box-shadow: 0 18px 32px rgba(17,17,17,0.12);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 30;
+}
+
+.menu-panel.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.menu-action {
+    width: 100%;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.menu-action:hover {
+    background: rgba(255, 112, 67, 0.08);
+}
+
+.hero-title {
+    margin: 14px 0 8px;
+    font-size: 27px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+    margin: 0;
+    max-width: 290px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(255, 250, 244, 0.72);
+}
+
+.home-indicator {
+    width: 134px;
+    height: 5px;
+    margin: 16px auto 0;
+    border-radius: 999px;
+    background: rgba(17,17,17,0.18);
+}
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 4px 12px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #ffb27d, #ef6c4d);
+    color: #fff;
+    font-size: 20px;
+    box-shadow: var(--shadow-soft);
+}
+
+.brand-name {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.brand-sub {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.date-pill {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(255,255,255,0.9);
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding: 22px;
+    border-radius: 28px;
+    background: linear-gradient(160deg, #23313d 0%, #344856 100%);
+    color: #fffaf4;
+    box-shadow: var(--shadow-soft);
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    right: -42px;
+    top: -18px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%);
+}
+
+.eyebrow {
+    display: inline-flex;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+}
+
+h1 {
+    margin: 14px 0 8px;
+    font-size: 29px;
+    line-height: 1.15;
+}
+
+.subtitle {
+    margin: 0;
+    max-width: 290px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: rgba(255, 250, 244, 0.72);
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.hero-card {
+    padding: 14px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.hero-label {
+    font-size: 12px;
+    color: rgba(255, 250, 244, 0.68);
+}
+
+.hero-value {
+    margin-top: 6px;
+    font-size: 34px;
+    font-weight: 800;
+}
+
+.hero-note {
+    margin-top: 8px;
+    font-size: 12px;
+    color: rgba(255, 250, 244, 0.72);
+}
+
+.progress-track,
+.day-bar {
+    margin-top: 10px;
+    overflow: hidden;
+    border-radius: 999px;
+}
+
+.progress-track {
+    height: 14px;
+    background: rgba(255,255,255,0.12);
+}
+
+.progress-fill,
+.day-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #ffb36e, #ff7d57);
+}
+
+.page {
+    display: grid;
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.panel {
+    padding: 18px;
+    border-radius: 24px;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: var(--shadow-soft);
+}
+
+.panel-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.panel-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.panel-tip {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.grid {
+    display: grid;
+    gap: 12px;
+}
+
+.grid.two,
+.stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field {
+    display: grid;
+    gap: 6px;
+}
+
+label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--card-strong);
+    padding: 14px 15px;
+    font-size: 15px;
+    color: var(--text);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+input:focus {
+    outline: none;
+    border-color: rgba(239,108,77,0.45);
+    box-shadow: 0 0 0 4px rgba(239,108,77,0.1);
+}
+
+.quick-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.quick-chip {
+    border: 0;
+    margin: 0;
+    padding: 10px 8px;
+    border-radius: 14px;
+    background: rgba(239,108,77,0.09);
+    color: var(--accent-strong);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.feedback {
+    min-height: 18px;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--success);
+}
+
+.stats,
+.daily-list,
+.history-list {
+    display: grid;
+    gap: 12px;
+}
+
+.stat,
+.mini-card,
+.day-item,
+.history-item,
+.trend-box {
+    padding: 14px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.72);
+}
+
+.stat-label,
+.mini-label,
+.trend-note,
+.day-change,
+.day-caption,
+.history-meta,
+.history-caption {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.stat-value,
+.mini-value {
+    margin-top: 8px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.stat-tip,
+.mini-desc {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.day-top,
+.history-top,
+.trend-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.day-date,
+.history-date {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.day-bar {
+    height: 10px;
+    background: #ece9e5;
+}
+
+.day-bar-fill {
+    background: linear-gradient(90deg, #49b781, #27936a);
+}
+
+.ring-row {
+    display: grid;
+    grid-template-columns: 112px 1fr;
+    gap: 14px;
+    align-items: center;
+}
+
+.ring {
+    width: 112px;
+    height: 112px;
+    margin: 0 auto;
+}
+
+.ring svg {
+    width: 112px;
+    height: 112px;
+}
+
+.ring-bg {
+    fill: none;
+    stroke: rgba(35,49,61,0.08);
+    stroke-width: 10;
+}
+
+.ring-progress {
+    fill: none;
+    stroke: url(#ringGradient);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.35s ease;
+}
+
+.ring-center {
+    font-size: 22px;
+    font-weight: 800;
+    fill: var(--text);
+}
+
+.ring-sub {
+    font-size: 10px;
+    fill: var(--muted);
+}
+
+.trend-box {
+    background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.58));
+}
+
+#trendChart {
+    display: block;
+    width: 100%;
+    height: 200px;
+    margin-top: 12px;
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 18px 12px;
+    border-radius: 18px;
+    border: 1px dashed rgba(78, 59, 43, 0.15);
+    background: rgba(255,255,255,0.5);
+}
+
+.bottom-dock {
+    position: fixed;
+    left: 50%;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: min(calc(100% - 24px), 430px);
+    z-index: 10;
+}
+
+.dock-shell {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 28px;
+    background: rgba(255,252,247,0.9);
+    border: 1px solid rgba(255,255,255,0.92);
+    box-shadow: 0 18px 40px rgba(61, 41, 24, 0.18);
+    backdrop-filter: blur(16px);
+}
+
+.nav-group {
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
+}
+
+.nav-item {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.nav-icon {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(35,49,61,0.06);
+    font-size: 16px;
+}
+
+.nav-item.active {
+    color: var(--accent-strong);
+}
+
+.nav-item.active .nav-icon {
+    background: var(--accent-soft);
+}
+
+.save-fab {
+    border: 0;
+    margin: -34px 0 0;
+    width: 72px;
+    height: 72px;
+    border-radius: 24px;
+    background: linear-gradient(160deg, #ff9d70, #d45136);
+    color: #fff;
+    box-shadow: 0 18px 35px rgba(212, 81, 54, 0.34);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .app-shell {
+        border-radius: 28px;
+        padding: 12px;
+    }
+
+    .hero-grid,
+    .grid.two,
+    .stats,
+    .ring-row {
+        grid-template-columns: 1fr;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .quick-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .save-fab {
+        width: 68px;
+        height: 68px;
+    }
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <div>
+            <div class="app-label">减肥记录</div>
+            <h1>今天的体重</h1>
+        </div>
+        <div class="top-actions">
+            <div class="date-pill" id="todayLabel">今天</div>
+            <button class="glass-btn" id="menuButton" type="button" aria-label="更多操作">⋯</button>
+            <div class="menu-panel" id="menuPanel">
+                <button class="menu-action" type="button" data-menu-action="profile">去今日记录</button>
+                <button class="menu-action" type="button" data-menu-action="trend">看体重趋势</button>
+                <button class="menu-action" type="button" data-menu-action="focus-weight">输入今日体重</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="eyebrow">进度总览</div>
+        <div class="hero-title">慢一点也没关系，重点是继续向前。</div>
+        <p class="hero-subtitle">输入今天的体重后，首页会自动更新总进度、距离目标和最近趋势。</p>
+        <div class="hero-grid">
+            <div class="hero-card">
+                <div class="hero-label">总进度</div>
+                <div class="hero-value" id="heroPercent">0%</div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="heroProgressBar"></div>
+                </div>
+                <div class="hero-note" id="heroNote">先完成基础资料设置</div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-label">距离目标</div>
+                <div class="hero-value" id="heroRemainHero">--</div>
+                <div class="hero-note">坚持比速度更重要</div>
+            </div>
+        </div>
+    </section>
+
+    <main class="page">
+        <section class="panel" id="panel-profile">
+            <div class="panel-title-row">
+                <h2 class="panel-title">今日记录</h2>
+                <div class="panel-tip">先设定，再打卡</div>
+            </div>
+            <div class="grid two">
+                <div class="field">
+                    <label for="recordDate">记录日期</label>
+                    <input type="date" id="recordDate">
+                </div>
+                <div class="field">
+                    <label for="height">身高 (m)</label>
+                    <input type="number" id="height" min="0.5" max="2.5" step="0.01" placeholder="例如 1.60">
+                </div>
+                <div class="field">
+                    <label for="startWeight">初始体重 (kg)</label>
+                    <input type="number" id="startWeight" min="1" max="500" step="0.1" placeholder="例如 68.0">
+                </div>
+                <div class="field">
+                    <label for="target">目标体重 (kg)</label>
+                    <input type="number" id="target" min="1" max="500" step="0.1" placeholder="例如 55.0">
+                </div>
+                <div class="field">
+                    <label for="weight">今日体重 (kg)</label>
+                    <input type="number" id="weight" min="1" max="500" step="0.1" placeholder="例如 63.5">
+                </div>
+            </div>
+            <div class="quick-row">
+                <button class="quick-chip" type="button" data-delta="-1">比昨天轻 1kg</button>
+                <button class="quick-chip" type="button" data-delta="-0.5">比昨天轻 0.5kg</button>
+                <button class="quick-chip" type="button" data-delta="0">和昨天一样</button>
+                <button class="quick-chip" type="button" data-delta="0.5">比昨天重 0.5kg</button>
+            </div>
+            <div class="feedback" id="result"></div>
+        </section>
+
+        <section class="panel" id="panel-overview">
+            <div class="panel-title-row">
+                <h2 class="panel-title">进度总览</h2>
+                <div class="panel-tip" id="overviewHint">继续保持节奏</div>
+            </div>
+            <div class="ring-row">
+                <div class="ring">
+                    <svg viewBox="0 0 120 120" aria-label="进度环图">
+                        <defs>
+                            <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#ffb36e"></stop>
+                                <stop offset="100%" stop-color="#ef6c4d"></stop>
+                            </linearGradient>
+                        </defs>
+                        <circle class="ring-bg" cx="60" cy="60" r="42"></circle>
+                        <circle class="ring-progress" id="ringProgress" cx="60" cy="60" r="42"></circle>
+                        <text class="ring-center" id="ringPercent" x="60" y="58" text-anchor="middle">0%</text>
+                        <text class="ring-sub" x="60" y="74" text-anchor="middle">完成度</text>
+                    </svg>
+                </div>
+                <div class="grid two">
+                    <div class="stat">
+                        <div class="stat-label">当前体重</div>
+                        <div class="stat-value" id="currentWeightValue">--</div>
+                        <div class="stat-tip" id="currentWeightTip">暂无记录</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">最新 BMI</div>
+                        <div class="stat-value" id="bmiValue">--</div>
+                        <div class="stat-tip" id="bmiCategory">等待数据</div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="mini-label">已减重量</div>
+                        <div class="mini-value" id="lostValue">--</div>
+                        <div class="mini-desc" id="lostDesc">从初始体重开始计算</div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="mini-label">距离目标</div>
+                        <div class="mini-value" id="remainingValue">--</div>
+                        <div class="mini-desc" id="remainingDesc">继续保持节奏</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel" id="panel-daily">
+            <div class="panel-title-row">
+                <h2 class="panel-title">最近每日进度</h2>
+                <div class="panel-tip">最近 7 条记录</div>
+            </div>
+            <div class="daily-list" id="dailyList"></div>
+        </section>
+
+        <section class="panel" id="panel-trend">
+            <div class="panel-title-row">
+                <h2 class="panel-title">体重趋势</h2>
+                <div class="panel-tip" id="trendNote">至少保存 2 条记录后会更直观</div>
+            </div>
+            <div class="trend-box">
+                <svg id="trendChart" viewBox="0 0 320 200" preserveAspectRatio="none" aria-label="体重趋势图"></svg>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-title-row">
+                <h2 class="panel-title">历史记录</h2>
+                <div class="panel-tip">按日期倒序</div>
+            </div>
+            <div class="history-list" id="history"></div>
+        </section>
+    </main>
+</div>
+
+<div class="bottom-dock">
+    <div class="dock-shell">
+        <div class="nav-group">
+            <div class="nav-item active" data-target="panel-overview">
+                <div class="nav-icon">●</div>
+                <div>总览</div>
+            </div>
+            <div class="nav-item" data-target="panel-trend">
+                <div class="nav-icon">◔</div>
+                <div>趋势</div>
+            </div>
+        </div>
+        <button class="save-fab" id="saveButton" type="button">保存<br>记录</button>
+        <div class="nav-group">
+            <div class="nav-item" data-target="history">
+                <div class="nav-icon">◎</div>
+                <div>历史</div>
+            </div>
+            <div class="nav-item" data-target="panel-profile">
+                <div class="nav-icon">◡</div>
+                <div>我的</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const STORAGE_KEYS = {
+    profile: "weight-tracker-profile",
+    records: "weight-tracker-records"
+};
+
+const RING_RADIUS = 42;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
+document.getElementById("ringProgress").style.strokeDasharray = `${RING_CIRCUMFERENCE}`;
+document.getElementById("ringProgress").style.strokeDashoffset = `${RING_CIRCUMFERENCE}`;
+
+function getToday() {
+    return new Date().toISOString().slice(0, 10);
+}
+
+function formatDate(dateText) {
+    const date = new Date(dateText);
+    if (Number.isNaN(date.getTime())) {
+        return dateText;
+    }
+
+    return date.toLocaleDateString("zh-CN", {
+        month: "numeric",
+        day: "numeric"
+    });
+}
+
+function renderTodayLabel() {
+    const date = new Date();
+    document.getElementById("todayLabel").textContent = date.toLocaleDateString("zh-CN", {
+        month: "short",
+        day: "numeric"
+    });
+}
+
+function formatWeight(value) {
+    return `${Number(value).toFixed(1)} kg`;
+}
+
+function getBMICategory(bmi) {
+    if (bmi < 18.5) return "偏瘦";
+    if (bmi < 24) return "正常";
+    if (bmi < 28) return "超重";
+    return "肥胖";
+}
+
+function readProfile() {
+    try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile));
+        if (!raw || typeof raw !== "object") {
+            return { height: "", startWeight: "", target: "" };
+        }
+
+        return {
+            height: raw.height ?? "",
+            startWeight: raw.startWeight ?? "",
+            target: raw.target ?? ""
+        };
+    } catch (error) {
+        return { height: "", startWeight: "", target: "" };
+    }
+}
+
+function saveProfile(profile) {
+    localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(profile));
+}
+
+function readRecords() {
+    try {
+        const records = JSON.parse(localStorage.getItem(STORAGE_KEYS.records));
+        if (!Array.isArray(records)) {
+            return [];
+        }
+
+        return records
+            .map((record) => ({
+                date: record.date,
+                weight: Number(record.weight),
+                bmi: Number(record.bmi),
+                category: record.category || ""
+            }))
+            .filter((record) => record.date && Number.isFinite(record.weight))
+            .sort((a, b) => b.date.localeCompare(a.date));
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveRecords(records) {
+    localStorage.setItem(STORAGE_KEYS.records, JSON.stringify(records));
+}
+
+function populateInputs() {
+    const profile = readProfile();
+    document.getElementById("recordDate").value = getToday();
+    document.getElementById("height").value = profile.height;
+    document.getElementById("startWeight").value = profile.startWeight;
+    document.getElementById("target").value = profile.target;
+}
+
+function calculateProgress(startWeight, currentWeight, targetWeight) {
+    if (![startWeight, currentWeight, targetWeight].every(Number.isFinite)) {
+        return null;
+    }
+
+    const total = startWeight - targetWeight;
+    if (total === 0) {
+        return {
+            percent: currentWeight <= targetWeight ? 100 : 0,
+            lost: startWeight - currentWeight,
+            remaining: Math.max(0, currentWeight - targetWeight)
+        };
+    }
+
+    return {
+        percent: Math.max(0, Math.min(100, ((startWeight - currentWeight) / total) * 100)),
+        lost: startWeight - currentWeight,
+        remaining: Math.max(0, currentWeight - targetWeight)
+    };
+}
+
+function updateHero(profile, latestRecord) {
+    const heroPercent = document.getElementById("heroPercent");
+    const heroNote = document.getElementById("heroNote");
+    const heroProgressBar = document.getElementById("heroProgressBar");
+    const heroRemain = document.getElementById("heroRemainHero");
+    const progress = calculateProgress(Number(profile.startWeight), latestRecord ? latestRecord.weight : NaN, Number(profile.target));
+
+    if (!progress) {
+        heroPercent.textContent = "0%";
+        heroNote.textContent = "先完成基础资料设置";
+        heroRemain.textContent = "--";
+        heroProgressBar.style.width = "0%";
+        return;
+    }
+
+    heroPercent.textContent = `${progress.percent.toFixed(0)}%`;
+    heroProgressBar.style.width = `${progress.percent}%`;
+    heroRemain.textContent = `${progress.remaining.toFixed(1)}kg`;
+    heroNote.textContent = latestRecord.weight <= Number(profile.target)
+        ? `已达到目标 ${formatWeight(profile.target)}`
+        : `还差 ${progress.remaining.toFixed(1)} kg 到目标`;
+}
+
+function updateStats(profile, latestRecord) {
+    const currentWeightValue = document.getElementById("currentWeightValue");
+    const currentWeightTip = document.getElementById("currentWeightTip");
+    const bmiValue = document.getElementById("bmiValue");
+    const bmiCategory = document.getElementById("bmiCategory");
+    const lostValue = document.getElementById("lostValue");
+    const lostDesc = document.getElementById("lostDesc");
+    const remainingValue = document.getElementById("remainingValue");
+    const remainingDesc = document.getElementById("remainingDesc");
+    const overviewHint = document.getElementById("overviewHint");
+    const ringPercent = document.getElementById("ringPercent");
+    const ringProgress = document.getElementById("ringProgress");
+
+    if (!latestRecord) {
+        currentWeightValue.textContent = "--";
+        currentWeightTip.textContent = "暂无记录";
+        bmiValue.textContent = "--";
+        bmiCategory.textContent = "等待数据";
+        lostValue.textContent = "--";
+        lostDesc.textContent = "从初始体重开始计算";
+        remainingValue.textContent = "--";
+        remainingDesc.textContent = "继续保持节奏";
+        overviewHint.textContent = "继续保持节奏";
+        ringPercent.textContent = "0%";
+        ringProgress.style.strokeDashoffset = `${RING_CIRCUMFERENCE}`;
+        return;
+    }
+
+    currentWeightValue.textContent = formatWeight(latestRecord.weight);
+    currentWeightTip.textContent = `记录日期 ${formatDate(latestRecord.date)}`;
+    bmiValue.textContent = latestRecord.bmi.toFixed(1);
+    bmiCategory.textContent = latestRecord.category;
+
+    const progress = calculateProgress(Number(profile.startWeight), latestRecord.weight, Number(profile.target));
+    if (!progress) {
+        lostValue.textContent = "--";
+        remainingValue.textContent = "--";
+        return;
+    }
+
+    lostValue.textContent = `${progress.lost.toFixed(1)} kg`;
+    lostDesc.textContent = progress.lost >= 0 ? "相比初始体重的变化" : "当前比初始体重更高";
+    remainingValue.textContent = `${progress.remaining.toFixed(1)} kg`;
+    remainingDesc.textContent = latestRecord.weight <= Number(profile.target) ? "目标已完成" : `目标体重 ${formatWeight(profile.target)}`;
+    overviewHint.textContent = latestRecord.weight <= Number(profile.target) ? "今天已经达标" : `再减 ${progress.remaining.toFixed(1)} kg 就到终点`;
+    ringPercent.textContent = `${progress.percent.toFixed(0)}%`;
+    ringProgress.style.strokeDashoffset = `${RING_CIRCUMFERENCE * (1 - progress.percent / 100)}`;
+}
+
+function renderDailyProgress(records, profile) {
+    const container = document.getElementById("dailyList");
+    container.innerHTML = "";
+
+    if (records.length === 0) {
+        container.innerHTML = '<div class="empty">还没有每日记录，先保存今天的体重吧。</div>';
+        return;
+    }
+
+    records.slice(0, 7).forEach((record, index) => {
+        const previous = records[index + 1];
+        const progress = calculateProgress(Number(profile.startWeight), record.weight, Number(profile.target));
+        const dayChange = previous ? (record.weight - previous.weight) : 0;
+        const item = document.createElement("div");
+        item.className = "day-item";
+        item.innerHTML = `
+            <div class="day-top">
+                <div class="day-date">${formatDate(record.date)}</div>
+                <div class="day-change">${dayChange === 0 ? "较上次 0.0 kg" : `较上次 ${dayChange > 0 ? "+" : ""}${dayChange.toFixed(1)} kg`}</div>
+            </div>
+            <div class="day-bar">
+                <div class="day-bar-fill" style="width: ${progress ? progress.percent : 0}%"></div>
+            </div>
+            <div class="day-caption">${formatWeight(record.weight)}${progress ? `，累计完成 ${progress.percent.toFixed(0)}%` : ""}</div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function renderHistory(records) {
+    const container = document.getElementById("history");
+    container.innerHTML = "";
+
+    if (records.length === 0) {
+        container.innerHTML = '<div class="empty">历史记录会显示在这里。</div>';
+        return;
+    }
+
+    records.forEach((record) => {
+        const item = document.createElement("div");
+        item.className = "history-item";
+        item.innerHTML = `
+            <div class="history-top">
+                <div class="history-date">${formatDate(record.date)}</div>
+                <div class="history-meta">${formatWeight(record.weight)}</div>
+            </div>
+            <div class="history-caption">BMI ${record.bmi.toFixed(1)} · ${record.category}</div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function renderTrendChart(records) {
+    const chart = document.getElementById("trendChart");
+    const trendNote = document.getElementById("trendNote");
+
+    if (records.length === 0) {
+        chart.innerHTML = '<text x="160" y="100" text-anchor="middle" fill="#8a948d" font-size="13">暂无趋势数据</text>';
+        trendNote.textContent = "保存记录后会自动绘制走势";
+        return;
+    }
+
+    const ordered = records.slice().reverse();
+    const weights = ordered.map((item) => item.weight);
+    const minWeight = Math.min(...weights);
+    const maxWeight = Math.max(...weights);
+    const range = Math.max(maxWeight - minWeight, 1);
+    const width = 320;
+    const height = 200;
+    const paddingX = 18;
+    const paddingTop = 18;
+    const paddingBottom = 26;
+    const usableWidth = width - paddingX * 2;
+    const usableHeight = height - paddingTop - paddingBottom;
+    const points = ordered.map((record, index) => {
+        const x = paddingX + (ordered.length === 1 ? usableWidth / 2 : (usableWidth / (ordered.length - 1)) * index);
+        const y = paddingTop + ((maxWeight - record.weight) / range) * usableHeight;
+        return { x, y, label: formatDate(record.date) };
+    });
+    const linePath = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
+    const areaPath = `${linePath} L ${points[points.length - 1].x} ${height - paddingBottom} L ${points[0].x} ${height - paddingBottom} Z`;
+
+    chart.innerHTML = `
+        <defs>
+            <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(239,108,77,0.38)"></stop>
+                <stop offset="100%" stop-color="rgba(239,108,77,0.02)"></stop>
+            </linearGradient>
+        </defs>
+        <line x1="${paddingX}" y1="${height - paddingBottom}" x2="${width - paddingX}" y2="${height - paddingBottom}" stroke="rgba(44,36,29,0.14)" stroke-width="1"></line>
+        <path d="${areaPath}" fill="url(#areaFill)"></path>
+        <path d="${linePath}" fill="none" stroke="#d45136" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+        ${points.map((point) => `<circle cx="${point.x}" cy="${point.y}" r="4" fill="#fffaf5" stroke="#d45136" stroke-width="2"></circle>`).join("")}
+        ${points.map((point) => `<text x="${point.x}" y="${height - 8}" text-anchor="middle" fill="#8a948d" font-size="11">${point.label}</text>`).join("")}
+    `;
+
+    trendNote.textContent = ordered.length >= 2
+        ? `从 ${formatWeight(ordered[0].weight)} 变化到 ${formatWeight(ordered[ordered.length - 1].weight)}`
+        : `当前记录 ${formatWeight(ordered[0].weight)}`;
+}
+
+function validateInputs(height, startWeight, target, weight) {
+    if (!Number.isFinite(height) || height < 0.5 || height > 2.5) return "请输入有效身高，建议范围 0.5m 到 2.5m。";
+    if (!Number.isFinite(startWeight) || startWeight <= 0) return "请输入有效的初始体重。";
+    if (!Number.isFinite(target) || target <= 0) return "请输入有效的目标体重。";
+    if (!Number.isFinite(weight) || weight <= 0) return "请输入有效的今日体重。";
+    if (target >= startWeight) return "目标体重需要小于初始体重，才方便计算减重进度。";
+    return "";
+}
+
+function renderAll() {
+    const profile = readProfile();
+    const records = readRecords();
+    const latestRecord = records[0] || null;
+    populateInputs();
+    renderTodayLabel();
+    updateHero(profile, latestRecord);
+    updateStats(profile, latestRecord);
+    renderDailyProgress(records, profile);
+    renderTrendChart(records);
+    renderHistory(records);
+}
+
+function saveTodayRecord() {
+    const recordDate = document.getElementById("recordDate").value || getToday();
+    const height = Number.parseFloat(document.getElementById("height").value);
+    const startWeight = Number.parseFloat(document.getElementById("startWeight").value);
+    const target = Number.parseFloat(document.getElementById("target").value);
+    const weight = Number.parseFloat(document.getElementById("weight").value);
+    const result = document.getElementById("result");
+    const validationMessage = validateInputs(height, startWeight, target, weight);
+
+    if (validationMessage) {
+        alert(validationMessage);
+        return;
+    }
+
+    const bmi = weight / (height * height);
+    const newRecord = {
+        date: recordDate,
+        weight,
+        bmi,
+        category: getBMICategory(bmi)
+    };
+
+    const records = readRecords().filter((record) => record.date !== newRecord.date);
+    records.unshift(newRecord);
+    saveProfile({ height, startWeight, target });
+    saveRecords(records);
+
+    document.getElementById("weight").value = "";
+    result.textContent = `已保存 ${formatDate(newRecord.date)} 的记录，当前体重 ${formatWeight(weight)}。`;
+    renderAll();
+}
+
+function applyQuickDelta(delta) {
+    const records = readRecords();
+    const latestRecord = records[0];
+    const weightInput = document.getElementById("weight");
+
+    if (!latestRecord) {
+        return;
+    }
+
+    weightInput.value = (latestRecord.weight + delta).toFixed(1);
+}
+
+function scrollToSection(targetId) {
+    const target = document.getElementById(targetId);
+    if (!target) {
+        return;
+    }
+
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    document.querySelectorAll(".nav-item").forEach((item) => {
+        item.classList.toggle("active", item.dataset.target === targetId);
+    });
+}
+
+function closeMenu() {
+    document.getElementById("menuPanel").classList.remove("open");
+}
+
+function toggleMenu() {
+    document.getElementById("menuPanel").classList.toggle("open");
+}
+
+renderAll();
+document.getElementById("saveButton").addEventListener("click", saveTodayRecord);
+document.querySelectorAll(".quick-chip").forEach((button) => {
+    button.addEventListener("click", () => {
+        applyQuickDelta(Number(button.dataset.delta));
+    });
+});
+document.getElementById("menuButton").addEventListener("click", toggleMenu);
+document.querySelectorAll(".menu-action").forEach((button) => {
+    button.addEventListener("click", () => {
+        const action = button.dataset.menuAction;
+        closeMenu();
+
+        if (action === "profile") {
+            scrollToSection("panel-profile");
+            return;
+        }
+
+        if (action === "trend") {
+            scrollToSection("panel-trend");
+            return;
+        }
+
+        if (action === "focus-weight") {
+            scrollToSection("panel-profile");
+            document.getElementById("weight").focus();
+        }
+    });
+});
+document.querySelectorAll(".nav-item").forEach((item) => {
+    item.addEventListener("click", () => {
+        scrollToSection(item.dataset.target);
+    });
+});
+document.addEventListener("click", (event) => {
+    const menuPanel = document.getElementById("menuPanel");
+    const menuButton = document.getElementById("menuButton");
+
+    if (!menuPanel.contains(event.target) && !menuButton.contains(event.target)) {
+        closeMenu();
+    }
+});
+</script>
+</body>
+</html>
+
+
+
+
+
+
